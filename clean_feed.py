@@ -1,7 +1,6 @@
 import urllib.request
-from bs4 import BeautifulSoup
+import re
 
-# Aktuelle RSS-URL von t-online
 url = "https://www.t-online.de/nachrichten/id_76883394/rss.xml"
 
 req = urllib.request.Request(
@@ -10,21 +9,24 @@ req = urllib.request.Request(
 )
 
 try:
-    xml_data = urllib.request.urlopen(req).read()
-    soup = BeautifulSoup(xml_data, "xml")
+    with urllib.request.urlopen(req) as response:
+        content = response.read().decode('utf-8')
 
-    # Entfernt alle Bilder, HTML-Tags und Medien aus den Beschreibungen
-    for item in soup.find_all("item"):
-        if item.description and item.description.string:
-            desc_soup = BeautifulSoup(item.description.string, "html.parser")
-            for img in desc_soup.find_all(["img", "picture", "figure", "iframe"]):
-                img.decompose()
-            item.description.string = desc_soup.get_text()
+    # Entfernt alle <img>, <picture>, <figure> Tags samt Inhalt per Textfilter
+    content = re.sub(r'<img[^>]*>', '', content)
+    content = re.sub(r'<picture>.*?</picture>', '', content, flags=re.DOTALL)
+    content = re.sub(r'<figure>.*?</figure>', '', content, flags=re.DOTALL)
 
-    # Erstellt die finale feed.xml
-    with open("feed.xml", "wb") as f:
-        f.write(soup.prettify(encoding="utf-8"))
+    # Speichert die bereinigte feed.xml
+    with open("feed.xml", "w", encoding="utf-8") as f:
+        f.write(content)
+        
     print("feed.xml erfolgreich erstellt!")
 
+except Exception as e:
+    print(f"Fehler: {e}")
+    # Erstellt eine Notfall-Datei, damit Git nicht abstürzt
+    with open("feed.xml", "w", encoding="utf-8") as f:
+        f.write("<?xml version=\"1.0\"?><rss version=\"2.0\"><channel><title>Fehler</title></channel></rss>")
 except Exception as e:
     print(f"Fehler beim Abrufen: {e}")
