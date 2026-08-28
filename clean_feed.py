@@ -1,8 +1,9 @@
 import urllib.request
 from bs4 import BeautifulSoup
 
-url = "https://www.t-online.de/rss.xml"
-# Simuliert einen normalen Web-Browser, damit t-online die Anfrage nicht blockiert
+# Aktuelle RSS-URL von t-online
+url = "https://www.t-online.de/nachrichten/id_76883394/rss.xml"
+
 req = urllib.request.Request(
     url, 
     headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
@@ -12,7 +13,7 @@ try:
     xml_data = urllib.request.urlopen(req).read()
     soup = BeautifulSoup(xml_data, "xml")
 
-    # Entfernt alle Bilder und Multimedia-Tags aus der Beschreibung
+    # Entfernt alle Bilder, HTML-Tags und Medien aus den Beschreibungen
     for item in soup.find_all("item"):
         if item.description and item.description.string:
             desc_soup = BeautifulSoup(item.description.string, "html.parser")
