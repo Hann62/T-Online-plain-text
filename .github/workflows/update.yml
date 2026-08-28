@@ -2,17 +2,17 @@ name: Update RSS Feed
 
 on:
   schedule:
-    - cron: '0 */2 * * *'  # Alle 2 Stunden
-  workflow_dispatch:      # Ermöglicht manuelles Starten
+    - cron: '0 */2 * * *'
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4.2.2
       
       - name: Python installieren
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v5.4.0
         with:
           python-version: '3.x'
 
@@ -22,7 +22,7 @@ jobs:
       - name: Skript ausführen
         run: python clean_feed.py
 
-      - name: Änderungen speichern & hochladen
+      - name: Änderungen speichern
         run: |
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
