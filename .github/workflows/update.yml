@@ -5,6 +5,9 @@ on:
     - cron: '0 */2 * * *'
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -26,6 +29,9 @@ jobs:
         run: |
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
+          git add feed.xml
+          git commit -m "Feed aktualisiert" || exit 0
+          git push
           git add feed.xml
           git commit -m "Feed aktualisiert" || exit 0
           git push
