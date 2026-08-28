@@ -1,0 +1,31 @@
+name: Update RSS Feed
+
+on:
+  schedule:
+    - cron: '0 */2 * * *'  # Alle 2 Stunden
+  workflow_dispatch:      # Ermöglicht manuelles Starten
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Python installieren
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Paket-Bibliotheken installieren
+        run: pip install beautifulsoup4 lxml
+
+      - name: Skript ausführen
+        run: python clean_feed.py
+
+      - name: Änderungen speichern & hochladen
+        run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+          git add feed.xml
+          git commit -m "Feed aktualisiert" || exit 0
+          git push
