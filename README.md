@@ -1,2 +1,2 @@
-# T-Online-plain-text
+# Divoom-RSS
 RSS
